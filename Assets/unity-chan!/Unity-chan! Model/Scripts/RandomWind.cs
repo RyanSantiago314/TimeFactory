@@ -27,7 +27,7 @@ namespace UnityChan
 		{
 			Vector3 force = Vector3.zero;
 			if (isWindActive) {
-				force = new Vector3 (Mathf.PerlinNoise (Time.time, 0.0f) * 0.005f, 0, 0);
+				force = new Vector3 (Mathf.PerlinNoise (Time.time * TimeScale.player, 0.0f) * 0.005f, 0, 0);
 			}
 
 			for (int i = 0; i < springBones.Length; i++) {

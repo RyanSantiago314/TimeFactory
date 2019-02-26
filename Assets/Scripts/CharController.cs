@@ -16,6 +16,7 @@ public class CharController : MonoBehaviour
     public AudioSource nuuu;
     public AudioSource hello;
     public AudioSource trip;
+    public AudioSource slide;
 
     public float openSpeed = 4f;
     public GameObject HallDoor;
@@ -62,25 +63,27 @@ public class CharController : MonoBehaviour
             idle.PlayDelayed(.5f);
         else if (anim.GetBool("Rest"))
             rest.PlayDelayed(2f);
+        else if (anim.GetBool("Attack"))
+            slide.PlayDelayed(.1f);
 
         if (HallDoorOpen && HallDoor.transform.position.y < 10)
         {
-            HallDoor.transform.position += new Vector3(0, openSpeed * Time.deltaTime, 0);
+            HallDoor.transform.position += new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
         }
         else if (HallDoorOpen){}
         else if (!HallDoorOpen && HallDoor.transform.position.y > 3.5)
         {
-            HallDoor.transform.position -= new Vector3(0, openSpeed/2 * Time.deltaTime, 0);
+            HallDoor.transform.position -= new Vector3(0, openSpeed/2 * Time.deltaTime * TimeScale.global, 0);
         }
 
         if (SecondDoorOpen && SecondDoor.transform.position.y < 10)
         {
-            SecondDoor.transform.position += new Vector3(0, openSpeed * Time.deltaTime, 0);
+            SecondDoor.transform.position += new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
         }
         else if (SecondDoorOpen){}
         else if (!SecondDoorOpen && SecondDoor.transform.position.y > 3.5)
         {
-            SecondDoor.transform.position -= new Vector3(0, openSpeed/2 * Time.deltaTime, 0);
+            SecondDoor.transform.position -= new Vector3(0, openSpeed/2 * Time.deltaTime * TimeScale.global, 0);
         }
 
         if (subtitle.text != "" && textTimer < 360)
@@ -109,6 +112,10 @@ public class CharController : MonoBehaviour
                 subtitle.text = "Maybe someone left their keycard lying around...";
             }
             
+        }
+        else if (subtitle.text == "What the-?! What's happening?!!" && textTimer > 180)
+        {
+            subtitle.text = "INTRUDER ALERT. INITIATING SECURITY PROTOCOL.";
         }
     }
 
@@ -158,7 +165,9 @@ public class CharController : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Watch"))
         {
-            Restart();
+            trip.Play();
+            subtitle.text = "What the-?! What's happening?!!";
+            textTimer = 0;
         }
     }
 
@@ -176,7 +185,7 @@ public class CharController : MonoBehaviour
 
     public void openGame()
     {
-        starting.PlayDelayed(1.5f);
+        starting.PlayDelayed(.3f);
     }
 
     public void QuitGame()

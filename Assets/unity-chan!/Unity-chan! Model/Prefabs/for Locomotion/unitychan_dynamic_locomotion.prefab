@@ -1500,6 +1500,7 @@ GameObject:
   - component: {fileID: 11400112}
   - component: {fileID: 11400114}
   - component: {fileID: 2443703475193136278}
+  - component: {fileID: 4652917046767191641}
   - component: {fileID: 937779646}
   - component: {fileID: 937779647}
   - component: {fileID: 937779649}
@@ -1706,6 +1707,8 @@ MonoBehaviour:
   backwardSpeed: 2
   rotateSpeed: 2
   jumpPower: 2
+  baka: {fileID: 0}
+  gameStart: 0
 --- !u!114 &11400112
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1755,11 +1758,33 @@ MonoBehaviour:
   jump: {fileID: 937779647}
   run: {fileID: 937779646}
   rest: {fileID: 937779649}
-  idle2: {fileID: 937779650}
+  idle: {fileID: 0}
+  starting: {fileID: 0}
   hooray: {fileID: 937779652}
+  laugh: {fileID: 0}
+  nuuu: {fileID: 0}
+  hello: {fileID: 0}
+  trip: {fileID: 0}
   openSpeed: 4
   HallDoor: {fileID: 0}
+  SecondDoor: {fileID: 0}
+  KeyCard: {fileID: 0}
   sparkly: {fileID: 0}
+  important: {fileID: 0}
+  turnOn: {fileID: 0}
+  subtitle: {fileID: 0}
+--- !u!114 &4652917046767191641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf49d0d1dcbfbc142bb755d3b1ad7897, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!82 &937779646
 AudioSource:
   m_ObjectHideFlags: 0

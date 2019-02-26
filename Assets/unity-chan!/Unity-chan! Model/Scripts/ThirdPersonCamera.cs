@@ -5,17 +5,21 @@
 //
 using UnityEngine;
 using System.Collections;
+using UnityEngine.PostProcessing;
 
 namespace UnityChan
 {
 	public class ThirdPersonCamera : MonoBehaviour
 	{
+        public PostProcessingProfile timeSlowProfile;
+        public PostProcessingProfile normalProfile;
+        public TimeController controller;
 		public float smooth = 3f;		// カメラモーションのスムーズ化用変数
 		Transform standardPos;			// the usual position for the camera, specified by a transform in the game
-		Transform frontPos;			// Front Camera locater
-	
-		// スムーズに繋がない時（クイック切り替え）用のブーリアンフラグ
-		bool bQuickSwitch = false;	//Change Camera Position Quickly
+		Transform frontPos;         // Front Camera locater
+
+        // スムーズに繋がない時（クイック切り替え）用のブーリアンフラグ
+        public TimeController control;
         bool gameStart = false;
 
         public GameObject Canvas;
@@ -48,23 +52,31 @@ namespace UnityChan
 			}
             else
             {
-                transform.position = Vector3.Lerp (transform.position, frontPos.position, Time.fixedDeltaTime * smooth); 
+                transform.position = Vector3.Lerp(transform.position, frontPos.position, Time.fixedDeltaTime * smooth); 
                 transform.forward = Vector3.Lerp (transform.forward, frontPos.forward, Time.fixedDeltaTime * smooth);
+            }
+
+            if (controller.timeSlow)
+            {
+                GetComponent<PostProcessingBehaviour>().profile = timeSlowProfile;
+            }
+            else
+            {
+                GetComponent<PostProcessingBehaviour>().profile = normalProfile;
             }
 		}
 
 		void setCameraPositionNormalView ()
 		{
-			if (bQuickSwitch == false) {
+			//if (control.timeSlow == false) {
 				// the camera to standard position and direction
 				transform.position = Vector3.Lerp (transform.position, standardPos.position, Time.fixedDeltaTime * smooth);	
 				transform.forward = Vector3.Lerp (transform.forward, standardPos.forward, Time.fixedDeltaTime * smooth);
-			} else {
+			/*} else {
 				// the camera to standard position and direction / Quick Change
 				transform.position = standardPos.position;	
 				transform.forward = standardPos.forward;
-				bQuickSwitch = false;
-			}
+			}*/
 		}
 
         public void openGame()
