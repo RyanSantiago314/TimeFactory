@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class CharController : MonoBehaviour
 {
+    public Canvas inGameUI;
     private Animator anim;
     public AudioSource jump;
     public AudioSource run;
@@ -40,7 +41,10 @@ public class CharController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator> ();
+        anim = GetComponent<Animator>();
+        //inGameUI.enabled = false;
+        transform.GetChild(6).gameObject.SetActive(false);
+        transform.GetChild(7).gameObject.SetActive(false);
         hello.PlayDelayed(2.2f);
         run.volume = 0f;
         subtitle.text = "";
@@ -165,7 +169,9 @@ public class CharController : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Watch"))
         {
+            sparkly.transform.position = new Vector3(.064f, 1.65f, 57.595f);
             trip.Play();
+            sparkly.Play();
             subtitle.text = "What the-?! What's happening?!!";
             textTimer = 0;
         }
@@ -186,6 +192,7 @@ public class CharController : MonoBehaviour
     public void openGame()
     {
         starting.PlayDelayed(.3f);
+        inGameUI.enabled = true;
     }
 
     public void QuitGame()

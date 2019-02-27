@@ -6,10 +6,14 @@ using UnityEngine.UI;
 public class TimeController : MonoBehaviour
 {
     public CanvasGroup screenFlash;
+    public RectTransform healthBar;
+    public RectTransform energyBar;
+
     public bool timeSlow = false;
 
     private bool flash;
     private bool gotWatch = false;
+    private bool recharge = false;
     public Animator anim;
     public AudioSource jump;
     public AudioSource run;
@@ -20,34 +24,56 @@ public class TimeController : MonoBehaviour
 
     public AudioSource timeSlows;
     public AudioSource timeResumes;
+    public AudioSource slowedTime;
 
     public ParticleSystem watchPowers;
+
+    float healthBarWidth;
+    float eBarWidth;
+    float health = 400;
+    float energy = 400;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        slowedTime.volume = 0;
+        healthBarWidth = healthBar.sizeDelta.x;
+        eBarWidth = energyBar.sizeDelta.x;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Fire2") && gotWatch)
+        if (energy == 0)
+        {
+            recharge = true;
+            timeSlow = false;
+            flash = true;
+            screenFlash.alpha = 1;
+            timeResumes.Play();
+        }
+        if (energy >= 400)
+        {
+            energy = 400;
+            recharge = false;
+        }
+
+        if (Input.GetButtonDown("Fire2") && gotWatch && !recharge)
         {
             timeSlow = !timeSlow;
             flash = true;
             screenFlash.alpha = 1;
+            watchPowers.Play();
             if (timeSlow)
             {
                 timeSlows.Play();
-                watchPowers.Play();
             }
             else
             {
                 timeResumes.Play();
-                watchPowers.Stop();
             }
         }
+        
 
         if (flash)
         {
@@ -61,6 +87,8 @@ public class TimeController : MonoBehaviour
 
         if (timeSlow)
         {
+            energy -= 1;
+            slowedTime.volume = 1;
             if(anim.GetBool("Attack"))
             {
                 TimeScale.player = 2.8f;
@@ -84,6 +112,16 @@ public class TimeController : MonoBehaviour
         }
         else
         {
+            slowedTime.volume = 0;
+            if (recharge)
+                energy += .5f;
+            else
+                energy += 2;
+
+            if (energy == 0)
+            {
+                recharge = false;
+            }
             TimeScale.player = 1f;
             TimeScale.global = 1f;
             anim.speed = 1.5f;
@@ -94,6 +132,9 @@ public class TimeController : MonoBehaviour
             damage.pitch = 1f;
             slide.pitch = 1f;
         }
+
+        energyBar.sizeDelta = new Vector2(energy, healthBar.sizeDelta.y);
+        healthBar.sizeDelta = new Vector2(health, healthBar.sizeDelta.y);
     }
 
     private void OnTriggerEnter(Collider other)

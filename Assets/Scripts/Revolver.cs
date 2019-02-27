@@ -10,9 +10,9 @@ public class Revolver : MonoBehaviour
     void Update()
     {
 
-        transform.Rotate(new Vector3(180, 210, 120) * Time.deltaTime);
+        transform.Rotate(new Vector3(180, 210, 120) * Time.deltaTime * TimeScale.global);
 
-        transform.RotateAround(target.transform.position, Vector3.up, 120 * Time.deltaTime);
+        transform.RotateAround(target.transform.position, Vector3.up, 120 * Time.deltaTime * TimeScale.global);
 
         transform.position = new Vector3(transform.position.x, target.transform.position.y + 1 + .3f * Mathf.Sin(1f*Time.time), transform.position.z);
         
