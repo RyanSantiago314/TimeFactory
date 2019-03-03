@@ -13,6 +13,7 @@ namespace UnityChan
 	{
         public PostProcessingProfile timeSlowProfile;
         public PostProcessingProfile normalProfile;
+        public PostProcessingProfile gameOverProfile;
         public TimeController controller;
 		public float smooth = 3f;		// カメラモーションのスムーズ化用変数
 		Transform standardPos;			// the usual position for the camera, specified by a transform in the game
@@ -59,6 +60,10 @@ namespace UnityChan
             if (controller.timeSlow)
             {
                 GetComponent<PostProcessingBehaviour>().profile = timeSlowProfile;
+            }
+            else if (control.health <= 0)
+            {
+                GetComponent<PostProcessingBehaviour>().profile = gameOverProfile;
             }
             else
             {

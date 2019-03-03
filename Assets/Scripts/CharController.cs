@@ -23,10 +23,13 @@ public class CharController : MonoBehaviour
     public GameObject HallDoor;
     public GameObject SecondDoor;
     public GameObject KeyCard;
+    public GameObject Watch;
 
     public ParticleSystem sparkly;
     public ParticleSystem important;
     public ParticleSystem turnOn;
+
+    TimeController script;
 
     private bool HallDoorOpen = false;
     private bool SecondDoorOpen = false;
@@ -42,7 +45,8 @@ public class CharController : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
-        //inGameUI.enabled = false;
+        script = GetComponent<TimeController>();
+        inGameUI.enabled = false;
         transform.GetChild(6).gameObject.SetActive(false);
         transform.GetChild(7).gameObject.SetActive(false);
         hello.PlayDelayed(2.2f);
@@ -54,12 +58,12 @@ public class CharController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(anim.GetFloat("Speed") == 1f && !jump.isPlaying)
+        if(anim.GetFloat("Speed") == 1f && !jump.isPlaying && !GetComponent<UnityChan.UnityChanControlScriptWithRgidBody>().attacking)
             run.volume += 0.1f;
         else
             run.volume -= 0.1f;
 
-        if (anim.GetBool("Damage"))
+        if (anim.GetBool("Damage") || anim.GetBool("Poke"))
             trip.Play();
         else if (anim.GetBool("Jump"))
             jump.Play();
@@ -131,7 +135,7 @@ public class CharController : MonoBehaviour
             GotCard = true;
             sparkly.Play();
             important.Play();
-            other.gameObject.SetActive(false);
+            KeyCard.SetActive(false);
             transform.GetChild(6).gameObject.SetActive(true);
             subtitle.text = "Sweet! A keycard! This'll let me open that door over there!";
         }
@@ -170,6 +174,8 @@ public class CharController : MonoBehaviour
         else if (other.gameObject.CompareTag("Watch"))
         {
             sparkly.transform.position = new Vector3(.064f, 1.65f, 57.595f);
+            SwitchedOn = false;
+            Watch.SetActive(false);
             trip.Play();
             sparkly.Play();
             subtitle.text = "What the-?! What's happening?!!";
@@ -200,12 +206,15 @@ public class CharController : MonoBehaviour
         Application.Quit();
     }
 
-    void Restart()
+    public void Restart()
     {
+        script.health = 400;
+        Time.timeScale = 1;
         SwitchedOn = false;
         turnOn.Stop();
         GotCard = false;
         KeyCard.SetActive(true);
+        Watch.SetActive(true);
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
     }

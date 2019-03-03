@@ -26,11 +26,11 @@ namespace UnityChan
         // 前進速度
         public float forwardSpeed = 7.0f;
         // 後退速度
-        public float backwardSpeed = 2.0f;
+        public float backwardSpeed = 5.0f;
         // 旋回速度
-        public float rotateSpeed = 2.0f;
+        public float rotateSpeed = 5.0f;
         // ジャンプ威力
-        public float jumpPower = 4.0f;
+        public float jumpPower = 5.0f;
         // キャラクターコントローラ（カプセルコライダ）の参照
         private CapsuleCollider col;
         private Rigidbody rb;
@@ -55,6 +55,10 @@ namespace UnityChan
         static int waitState = Animator.StringToHash("Base Layer.IdleAnim");
         static int damage = Animator.StringToHash("Base Layer.Damage");
         static int slide = Animator.StringToHash("Base Layer.Slide");
+        static int poke = Animator.StringToHash("Base Layer.Poke");
+
+        public bool attacking = false;
+        public bool damaged = false;
 
         public bool gameStart = false;
 
@@ -80,13 +84,13 @@ namespace UnityChan
         {
             currentBaseState = anim.GetCurrentAnimatorStateInfo(0);    // 参照用のステート変数にBase Layer (0)の現在のステートを設定する
 
-            if (gameStart)
+            if (gameStart && !damaged)
             {
                 float h = Input.GetAxis("Horizontal");              // 入力デバイスの水平軸をhで定義
                 float v = Input.GetAxis("Vertical");                // 入力デバイスの垂直軸をvで定義
                 anim.SetFloat("Speed", v);                          // Animator側で設定している"Speed"パラメタにvを渡す
                 anim.SetFloat("Direction", h);                      // Animator側で設定している"Direction"パラメタにhを渡す
-                anim.speed = animSpeed;                             // Animatorのモーション再生速度に animSpeedを設定する
+                anim.speed = animSpeed * TimeScale.player;                             // Animatorのモーション再生速度に animSpeedを設定する
                 rb.useGravity = true;//ジャンプ中に重力を切るので、それ以外は重力の影響を受けるようにする
 
 
@@ -134,6 +138,7 @@ namespace UnityChan
             // 現在のベースレイヤーがlocoStateの時
             if (currentBaseState.fullPathHash == locoState)
             {
+                attacking = false;
                 //カーブでコライダ調整をしている時は、念のためにリセットする
                 idleTime = 0;
                 if (useCurves)
@@ -143,6 +148,7 @@ namespace UnityChan
                 if (Input.GetButtonDown("Fire1"))
                 {
                     anim.SetBool("Attack", true);
+                    attacking = true;
                 }
             }
             // JUMP中の処理
@@ -190,6 +196,8 @@ namespace UnityChan
             // 現在のベースレイヤーがidleStateの時
             else if (currentBaseState.fullPathHash == idleState)
             {
+                attacking = false;
+                damaged = false;
                 //カーブでコライダ調整をしている時は、念のためにリセットする
                 idleTime++;
                 if (useCurves)
@@ -226,8 +234,7 @@ namespace UnityChan
             // REST中の処理
             // 現在のベースレイヤーがrestStateの時
             else if (currentBaseState.fullPathHash == restState || currentBaseState.fullPathHash == waitState
-                                                                || currentBaseState.fullPathHash == damage
-                                                                || currentBaseState.fullPathHash == slide)
+                                                                || currentBaseState.fullPathHash == poke)
             {
                 //cameraObject.SendMessage("setCameraPositionFrontView");		// カメラを正面に切り替える
                 // ステートが遷移中でない場合、Rest bool値をリセットする（ループしないようにする）
@@ -235,8 +242,7 @@ namespace UnityChan
                 {
                     anim.SetBool("Rest", false);
                     anim.SetBool("IdleAnim", false);
-                    anim.SetBool("Damage", false);
-                    anim.SetBool("Attack", false);
+                    anim.SetBool("Poke", false);
                 }
                 if (Input.GetButtonDown("Jump") && !anim.IsInTransition(0))
                 {
@@ -244,14 +250,26 @@ namespace UnityChan
                     anim.SetBool("Jump", true);
                 }
             }
+            else if (currentBaseState.fullPathHash == damage)
+            {
+                damaged = true;
+                if (!anim.IsInTransition(0))
+                {
+                    anim.SetBool("Damage", false);
+                }
+            }
+            else if (currentBaseState.fullPathHash == slide)
+            {
+                attacking = true;
+                if (!anim.IsInTransition(0))
+                {
+                    anim.SetBool("Attack", false);
+                }
+            }
         }
         void OnTriggerEnter(Collider other)
         {
-            /*if (other.gameObject.CompareTag("End"))
-            {
-                anim.SetFloat("Speed", 0);
-                gameStart = false;
-            }*/
+
         }
 
         // キャラクターのコライダーサイズのリセット関数
@@ -264,13 +282,19 @@ namespace UnityChan
 
         public void ClickOnUnityChan()
         {
-            anim.SetBool("Damage", true);
-            baka.PlayDelayed(.8f);
+            anim.SetBool("Poke", true);
+            baka.PlayDelayed(1f);
         }
 
         public void openGame()
         {
             gameStart = true;
+        }
+
+        public void Restart()
+        {
+            anim.SetFloat("Speed", 0);
+            gameStart = false;
         }
     }
 }

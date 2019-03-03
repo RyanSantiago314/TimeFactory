@@ -17,9 +17,9 @@ public class UIRotator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        comp2.Rotate(new Vector3(0, 0, 60) * Time.deltaTime * TimeScale.global);
-        comp1.Rotate(new Vector3(0, 0, 30) * Time.deltaTime * TimeScale.global);
-        comp3.Rotate(new Vector3(0, 0, -90) * Time.deltaTime * TimeScale.global);
+        comp2.Rotate(new Vector3(0, 0, 60) * Time.deltaTime / (TimeScale.global/4));
+        comp1.Rotate(new Vector3(0, 0, 30) * Time.deltaTime / (TimeScale.global/4));
+        comp3.Rotate(new Vector3(0, 0, -90) * Time.deltaTime / (TimeScale.global/4));
 
     }
 }
