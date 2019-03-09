@@ -22,6 +22,9 @@ public class CharController : MonoBehaviour
     public float openSpeed = 4f;
     public GameObject HallDoor;
     public GameObject SecondDoor;
+    public GameObject BigDoorLeft;
+    public GameObject BigDoorRight;
+    public GameObject Pedestal;
     public GameObject KeyCard;
     public GameObject Watch;
 
@@ -29,14 +32,20 @@ public class CharController : MonoBehaviour
     public ParticleSystem important;
     public ParticleSystem turnOn;
 
+    public GameObject CopyChan;
+
     TimeController script;
+
+    public Light watchSpot;
 
     private bool HallDoorOpen = false;
     private bool SecondDoorOpen = false;
+    private bool BigDoorOpen = true;
     private bool SwitchedOn = false;
 
     public Text subtitle;
-    int textTimer;
+    public int textTimer;
+    public int killCount = 0;
 
     bool GotCard = false;
 
@@ -49,7 +58,7 @@ public class CharController : MonoBehaviour
         inGameUI.enabled = false;
         transform.GetChild(6).gameObject.SetActive(false);
         transform.GetChild(7).gameObject.SetActive(false);
-        hello.PlayDelayed(2.2f);
+        hello.PlayDelayed(1.5f);
         run.volume = 0f;
         subtitle.text = "";
         textTimer = 0;
@@ -93,6 +102,24 @@ public class CharController : MonoBehaviour
         {
             SecondDoor.transform.position -= new Vector3(0, openSpeed/2 * Time.deltaTime * TimeScale.global, 0);
         }
+        if (BigDoorOpen && BigDoorLeft.transform.position.x > -11.8)
+        {
+            BigDoorLeft.transform.position -= new Vector3(openSpeed * Time.deltaTime * TimeScale.global, 0, 0);
+            BigDoorRight.transform.position += new Vector3(openSpeed * Time.deltaTime * TimeScale.global, 0, 0);
+        }
+        else if (!BigDoorOpen && BigDoorLeft.transform.position.x < -4.37)
+        {
+            BigDoorLeft.transform.position += new Vector3(openSpeed * Time.deltaTime * TimeScale.global, 0, 0);
+            BigDoorRight.transform.position -= new Vector3(openSpeed * Time.deltaTime * TimeScale.global, 0, 0);
+        }
+        if (killCount >= 5 && Pedestal.transform.position.y < 4.42)
+        {
+            Pedestal.transform.position += new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
+        }
+        else if (Pedestal.transform.position.y > .42)
+        {
+            Pedestal.transform.position -= new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
+        }
 
         if (subtitle.text != "" && textTimer < 360)
             textTimer++;
@@ -124,6 +151,16 @@ public class CharController : MonoBehaviour
         else if (subtitle.text == "What the-?! What's happening?!!" && textTimer > 180)
         {
             subtitle.text = "INTRUDER ALERT. INITIATING SECURITY PROTOCOL.";
+        }
+        else if (subtitle.text == "INTRUDER ALERT. INITIATING SECURITY PROTOCOL." && textTimer > 300)
+        {
+            trip.Play();
+            subtitle.text = "Wha... WHAT ARE THESE THINGS?";
+            textTimer = 180;
+        }
+        else if (subtitle.text == "The watch seems to be resonating with this device..." && textTimer > 180)
+        {
+            subtitle.text = "And turning on that door...";
         }
     }
 
@@ -164,6 +201,12 @@ public class CharController : MonoBehaviour
         {
             if (SwitchedOn)
                 SecondDoorOpen = true;
+            else if (script.gotWatch)
+            {
+                nuuu.Play();
+                subtitle.text = "Must've been locked when I tripped the alarm...";
+                textTimer = 0;
+            }
             else
             {
                 nuuu.Play();
@@ -175,10 +218,45 @@ public class CharController : MonoBehaviour
         {
             sparkly.transform.position = new Vector3(.064f, 1.65f, 57.595f);
             SwitchedOn = false;
+            BigDoorOpen = false;
             Watch.SetActive(false);
             trip.Play();
             sparkly.Play();
             subtitle.text = "What the-?! What's happening?!!";
+            textTimer = 0;
+            watchSpot.spotAngle = 150;
+            watchSpot.color = Color.red;
+
+            for (int i = 0 ; i < 5; ++i)
+            {
+                switch(i)
+                {
+                    case 0:
+                        Instantiate(CopyChan, new Vector3(0, 9, 63), Quaternion.identity);
+                        break;
+                    case 1:
+                        Instantiate(CopyChan, new Vector3(6, 11, 61), Quaternion.identity);
+                        break;
+                    case 2:
+                        Instantiate(CopyChan, new Vector3(-6, 11, 61), Quaternion.identity);
+                        break;
+                    case 3:
+                        Instantiate(CopyChan, new Vector3(8, 12, 58.5f), Quaternion.identity);
+                        break;
+                    case 4:
+                        Instantiate(CopyChan, new Vector3(-8, 12, 58.5f), Quaternion.identity);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+        }
+        else if (other.gameObject.CompareTag("Terminal2"))
+        {
+            BigDoorOpen = true;
+            subtitle.text = "The watch seems to be resonating with this device...";
+            laugh.Play();
             textTimer = 0;
         }
     }
@@ -192,6 +270,10 @@ public class CharController : MonoBehaviour
         else if (other.gameObject.CompareTag("Room2"))
         {
             SecondDoorOpen = false;
+        }
+        else if (other.gameObject.CompareTag("Terminal2"))
+        {
+            BigDoorOpen = false;
         }
     }
 
@@ -208,13 +290,23 @@ public class CharController : MonoBehaviour
 
     public void Restart()
     {
+        var enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (var enemy in enemies)
+        {
+            Destroy(enemy);
+        }
         script.health = 400;
-        Time.timeScale = 1;
+        anim.speed = 1;
         SwitchedOn = false;
         turnOn.Stop();
         GotCard = false;
+        script.timeSlow = false;
+        BigDoorOpen = true;
         KeyCard.SetActive(true);
         Watch.SetActive(true);
+        watchSpot.spotAngle = 50;
+        killCount = 0;
+        watchSpot.color = new Color(114, 255, 255, 1);
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
     }

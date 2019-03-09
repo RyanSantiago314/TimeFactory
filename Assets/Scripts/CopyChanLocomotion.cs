@@ -23,11 +23,11 @@ namespace CopyChan
 
         // 以下キャラクターコントローラ用パラメタ
         // 前進速度
-        public float forwardSpeed = 7.2f;
+        public float forwardSpeed = 6.7f;
         // 旋回速度
         public float rotateSpeed = 4.0f;
 
-        public GameObject UnityChan;
+        private GameObject UnityChan;
         // キャラクターコントローラ（カプセルコライダ）の参照
         private CapsuleCollider col;
         private Rigidbody rb;
@@ -40,6 +40,8 @@ namespace CopyChan
         private AnimatorStateInfo currentBaseState;			// base layerで使われる、アニメーターの現在の状態の参照
         private float walkTime = 0;
         private float proximity = 0;
+        private float activeTime = 0;
+        private float walkThreshold;
 
         public bool attacking = false;
         public bool damaged = false;
@@ -65,15 +67,24 @@ namespace CopyChan
             orgColHight = col.height;
             orgVectColCenter = col.center;
             currentBaseState = anim.GetCurrentAnimatorStateInfo(0);
+            UnityChan = GameObject.Find("unitychan");
+            walkThreshold = Random.Range(55, 120);
         }
 
 
         // 以下、メイン処理.リジッドボディと絡めるので、FixedUpdate内で処理を行う.
         void FixedUpdate()
         {
+            if (transform.position.y < .25)
+                active = true;
+            if (active && activeTime < 30)
+            {
+                activeTime++;
+            }
+
             currentBaseState = anim.GetCurrentAnimatorStateInfo(0);    // 参照用のステート変数にBase Layer (0)の現在のステートを設定する
             float v = 0;
-            if (active && !attacking && !damaged)
+            if (active && !attacking && !damaged && activeTime >= 30)
             {
                 float distance = Vector3.Distance(UnityChan.transform.position, transform.position);
                 if (distance < 2)
@@ -85,8 +96,8 @@ namespace CopyChan
                     }
                 }
 
-                if (walkTime > 60)
-                    v = 1f;              // 入力デバイスの垂直軸をvで定義
+                if (walkTime > walkThreshold)
+                    v = .9f;              // 入力デバイスの垂直軸をvで定義
                 else
                     v = .3f;
                 velocity = new Vector3(0, 0, v);

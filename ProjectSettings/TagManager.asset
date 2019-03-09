@@ -11,6 +11,9 @@ TagManager:
   - Terminal
   - Watch
   - Enemy
+  - BigDoor
+  - Terminal2
+  - Obstacle
   layers:
   - Default
   - TransparentFX

@@ -14,7 +14,7 @@ public class Revolver : MonoBehaviour
 
         transform.RotateAround(target.transform.position, Vector3.up, 120 * Time.deltaTime * TimeScale.global);
 
-        transform.position = new Vector3(transform.position.x, target.transform.position.y + 1 + .3f * Mathf.Sin(1f*Time.time), transform.position.z);
+        transform.position = new Vector3(transform.position.x, target.transform.position.y + 1 + .3f * Mathf.Sin(1f*TimeScale.global), transform.position.z);
         
     }
 }

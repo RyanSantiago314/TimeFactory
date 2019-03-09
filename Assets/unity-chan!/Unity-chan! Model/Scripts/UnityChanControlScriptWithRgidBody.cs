@@ -26,11 +26,11 @@ namespace UnityChan
         // 前進速度
         public float forwardSpeed = 7.0f;
         // 後退速度
-        public float backwardSpeed = 5.0f;
+        public float backwardSpeed = 3.0f;
         // 旋回速度
-        public float rotateSpeed = 5.0f;
+        public float rotateSpeed = 3.0f;
         // ジャンプ威力
-        public float jumpPower = 5.0f;
+        public float jumpPower = 1.0f;
         // キャラクターコントローラ（カプセルコライダ）の参照
         private CapsuleCollider col;
         private Rigidbody rb;
@@ -129,7 +129,7 @@ namespace UnityChan
                 transform.localPosition += velocity * Time.fixedDeltaTime * TimeScale.player;
 
                 // 左右のキー入力でキャラクタをY軸で旋回させる
-                transform.Rotate(0, h * rotateSpeed, 0);
+                transform.Rotate(0, h * rotateSpeed * TimeScale.player, 0);
             }
 
 
