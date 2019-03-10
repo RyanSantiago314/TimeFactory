@@ -83,7 +83,15 @@ namespace UnityChan
         void FixedUpdate()
         {
             currentBaseState = anim.GetCurrentAnimatorStateInfo(0);    // 参照用のステート変数にBase Layer (0)の現在のステートを設定する
-
+            if (damaged)
+            {
+                col.center = new Vector3(0, .5f, 0);
+                col.height = .5f;
+            }
+            else
+            {
+                resetCollider();
+            }
             if (gameStart && !damaged)
             {
                 float h = Input.GetAxis("Horizontal");              // 入力デバイスの水平軸をhで定義

@@ -90,9 +90,9 @@ public class TimeController : MonoBehaviour
         {
             GameOver();
         }
-        else if ((script.subtitle.text == "Wha... WHAT ARE THESE THINGS?" || script.subtitle.text == "Right-Click to slow time.") && script.textTimer >= 350 && tutorial)
+        else if ((script.subtitle.text == "Wha... WHAT ARE THESE THINGS?" || script.subtitle.text == "Right-Click to slow time.") && script.textTimer >= 300 && tutorial)
         {
-            script.textTimer = 350;
+            script.textTimer = 300;
             TimeScale.player = 0;
             TimeScale.enemy = 0;
             TimeScale.global = 0;
@@ -111,9 +111,9 @@ public class TimeController : MonoBehaviour
                 TimeScale.global = 1;
             }
         }
-        else if ((script.subtitle.text == " " || script.subtitle.text == "Left-Click while running to slide attack") && script.textTimer >= 350 && tutorial)
+        else if ((script.subtitle.text == " " || script.subtitle.text == "Left-Click while running to slide attack") && script.textTimer >= 120 && tutorial)
         {
-            script.textTimer = 350;
+            script.textTimer = 120;
             TimeScale.player = 0;
             TimeScale.enemy = 0;
             TimeScale.global = 0;

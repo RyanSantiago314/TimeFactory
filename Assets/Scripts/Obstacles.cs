@@ -150,7 +150,7 @@ public class Obstacles : MonoBehaviour
             Porter.transform.position = new Vector3(25, Porter.transform.position.y, Porter.transform.position.z);
         }
 
-        Speedy.transform.position += new Vector3(120 * Time.deltaTime * TimeScale.global, 0, 0);
+        Speedy.transform.position += new Vector3(110 * Time.deltaTime * TimeScale.global, 0, 0);
         if (Speedy.transform.position.x >= 26)
         {
             Speedy.transform.position = new Vector3(-28, Speedy.transform.position.y, Speedy.transform.position.z);
