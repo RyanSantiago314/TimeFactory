@@ -75,6 +75,8 @@ namespace CopyChan
         // 以下、メイン処理.リジッドボディと絡めるので、FixedUpdate内で処理を行う.
         void FixedUpdate()
         {
+            if (transform.position.y < -20)
+                Destroy(gameObject);
             if (transform.position.y < .25)
                 active = true;
             if (active && activeTime < 30)

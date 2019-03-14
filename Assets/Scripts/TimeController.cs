@@ -128,6 +128,23 @@ public class TimeController : MonoBehaviour
                 TimeScale.global = 1;
             }
         }
+        else if ((script.subtitle.text == "Do I want to touch them or....?" || script.subtitle.text == "Press SPACE to jump") && script.textTimer >= 300 && tutorial)
+        {
+            script.textTimer = 300;
+            TimeScale.player = 0;
+            TimeScale.enemy = 0;
+            TimeScale.global = 0;
+            script.subtitle.text = "Press SPACE to jump";
+            if (Input.GetButtonDown("Jump"))
+            {
+                anim.SetBool("Jump", true);
+                script.textTimer = 0;
+                script.subtitle.text = "";
+                TimeScale.player = 1;
+                TimeScale.enemy = 1;
+                TimeScale.global = 1;
+            }
+        }
         else
         {
             if (Input.GetButtonDown("Fire2") && gotWatch && !recharge)
@@ -163,13 +180,16 @@ public class TimeController : MonoBehaviour
                 {
                     TimeScale.player = 1.5f;
                 }
+                else if (anim.GetCurrentAnimatorStateInfo(0).fullPathHash == Animator.StringToHash("Base Layer.Jump"))
+                {
+                    TimeScale.player = 1.2f;
+                }
                 else
                 {
                     TimeScale.player = .8f;
                 }
-                TimeScale.global = .3f;
+                TimeScale.global = .25f;
                 TimeScale.enemy = .3f;
-                slide.pitch = .6f;
                 slide.pitch = .6f;
                 jump.pitch = .6f;
                 run.pitch = .6f;
@@ -183,6 +203,12 @@ public class TimeController : MonoBehaviour
             {
                 TimeScale.player = 2f;
                 slide.pitch = 1;
+                anim.speed = 1.5f;
+            }
+            else if (anim.GetCurrentAnimatorStateInfo(0).fullPathHash == Animator.StringToHash("Base Layer.Jump"))
+            {
+                TimeScale.player = 1.7f;
+                jump.pitch = 1;
                 anim.speed = 1.5f;
             }
             else
@@ -252,7 +278,7 @@ public class TimeController : MonoBehaviour
             anim.SetBool("Damage", true);
             health -= 50;
             GetComponent<Rigidbody>().AddForce(Vector3.up * 20);
-            GetComponent<Rigidbody>().AddForce(Vector3.forward * -60);
+            GetComponent<Rigidbody>().AddForce(Vector3.forward * -75);
         }
     }
 

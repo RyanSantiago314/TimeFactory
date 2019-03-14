@@ -24,9 +24,12 @@ public class CharController : MonoBehaviour
     public GameObject SecondDoor;
     public GameObject BigDoorLeft;
     public GameObject BigDoorRight;
+    public GameObject Door4;
+    public GameObject Door5;
     public GameObject Pedestal;
     public GameObject KeyCard;
     public GameObject Watch;
+    public GameObject Lasers;
 
     public ParticleSystem sparkly;
     public ParticleSystem important;
@@ -41,6 +44,8 @@ public class CharController : MonoBehaviour
     private bool HallDoorOpen = false;
     private bool SecondDoorOpen = false;
     private bool BigDoorOpen = true;
+    private bool Door4Open = true;
+    private bool Door5Open = true;
     private bool SwitchedOn = false;
 
     public Text subtitle;
@@ -102,6 +107,7 @@ public class CharController : MonoBehaviour
         {
             SecondDoor.transform.position -= new Vector3(0, openSpeed/2 * Time.deltaTime * TimeScale.global, 0);
         }
+
         if (BigDoorOpen && BigDoorLeft.transform.position.x > -11.8)
         {
             BigDoorLeft.transform.position -= new Vector3(openSpeed * Time.deltaTime * TimeScale.global, 0, 0);
@@ -112,6 +118,25 @@ public class CharController : MonoBehaviour
             BigDoorLeft.transform.position += new Vector3(openSpeed * Time.deltaTime * TimeScale.global, 0, 0);
             BigDoorRight.transform.position -= new Vector3(openSpeed * Time.deltaTime * TimeScale.global, 0, 0);
         }
+
+        if (Door4Open && Door4.transform.position.y < 15)
+        {
+            Door4.transform.position += new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
+        }
+        else if (!Door4Open && Door4.transform.position.y > 5)
+        {
+            Door4.transform.position -= new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
+        }
+
+        if (Door5Open && Door5.transform.position.y < 21)
+        {
+            Door5.transform.position += new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
+        }
+        else if (!Door5Open && Door5.transform.position.y > 6)
+        {
+            Door5.transform.position -= new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
+        }
+
         if (killCount >= 5 && Pedestal.transform.position.y < 4.42)
         {
             Pedestal.transform.position += new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
@@ -162,11 +187,15 @@ public class CharController : MonoBehaviour
         {
             subtitle.text = "And turning on that door...";
         }
+        else if (subtitle.text == "What are these things? Lasers?" && textTimer > 180)
+        {
+            subtitle.text = "Is it okay to touch them or....?";
+        }
     }
 
-    void OnTriggerEnter(Collider other) 
+    void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("Card"))
+        if (other.gameObject.CompareTag("Card"))
         {
             laugh.Play();
             GotCard = true;
@@ -194,19 +223,13 @@ public class CharController : MonoBehaviour
             else
             {
                 subtitle.text = "This appears to be some kind of card reader terminal...";
-                textTimer = 0;  
+                textTimer = 0;
             }
         }
         else if (other.gameObject.CompareTag("Room2"))
         {
             if (SwitchedOn)
                 SecondDoorOpen = true;
-            else if (script.gotWatch)
-            {
-                nuuu.Play();
-                subtitle.text = "Must've been locked when I tripped the alarm...";
-                textTimer = 0;
-            }
             else
             {
                 nuuu.Play();
@@ -227,9 +250,9 @@ public class CharController : MonoBehaviour
             watchSpot.spotAngle = 150;
             watchSpot.color = Color.red;
 
-            for (int i = 0 ; i < 5; ++i)
+            for (int i = 0; i < 5; ++i)
             {
-                switch(i)
+                switch (i)
                 {
                     case 0:
                         Instantiate(CopyChan, new Vector3(0, 9, 63), Quaternion.identity);
@@ -258,6 +281,45 @@ public class CharController : MonoBehaviour
             subtitle.text = "The watch seems to be resonating with this device...";
             laugh.Play();
             textTimer = 0;
+        }
+        else if (other.gameObject.CompareTag("Door4"))
+        {
+            Door4Open = false;
+            subtitle.text = "What are these things? Lasers?";
+            textTimer = 0;
+        }
+        else if (other.gameObject.CompareTag("Laser"))
+        {
+            other.transform.parent.gameObject.SetActive(false);
+            trip.Play();
+            subtitle.text = "Uh oh...";
+            textTimer = 0;
+            for (int i = 0; i < 6; ++i)
+            {
+                switch (i)
+                {
+                    case 0:
+                        Instantiate(CopyChan, new Vector3(transform.position.x, 11, transform.position.z + 5), Quaternion.identity);
+                        break;
+                    case 1:
+                        Instantiate(CopyChan, new Vector3(transform.position.x - 5, 13, transform.position.z + 3), Quaternion.identity);
+                        break;
+                    case 2:
+                        Instantiate(CopyChan, new Vector3(transform.position.x + 5, 13, transform.position.z + 3), Quaternion.identity);
+                        break;
+                    case 3:
+                        Instantiate(CopyChan, new Vector3(transform.position.x - 7, 14, transform.position.z), Quaternion.identity);
+                        break;
+                    case 4:
+                        Instantiate(CopyChan, new Vector3(transform.position.x + 7, 14, transform.position.z), Quaternion.identity);
+                        break;
+                    case 5:
+                        Instantiate(CopyChan, new Vector3(transform.position.x, 11, transform.position.z - 5), Quaternion.identity);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 
@@ -295,6 +357,12 @@ public class CharController : MonoBehaviour
         {
             Destroy(enemy);
         }
+        for (int i = 0; i < Lasers.transform.childCount; i++)
+        {
+            var child = Lasers.transform.GetChild(i).gameObject;
+            if (child != null)
+                child.SetActive(true);
+        }
         script.health = 400;
         anim.speed = 1;
         SwitchedOn = false;
@@ -302,6 +370,7 @@ public class CharController : MonoBehaviour
         GotCard = false;
         script.timeSlow = false;
         BigDoorOpen = true;
+        Door4Open = true;
         KeyCard.SetActive(true);
         Watch.SetActive(true);
         watchSpot.spotAngle = 50;

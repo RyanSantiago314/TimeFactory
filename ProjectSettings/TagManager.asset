@@ -14,6 +14,8 @@ TagManager:
   - BigDoor
   - Terminal2
   - Obstacle
+  - Door4
+  - Laser
   layers:
   - Default
   - TransparentFX
