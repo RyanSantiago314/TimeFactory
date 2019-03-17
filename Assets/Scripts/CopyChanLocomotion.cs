@@ -43,6 +43,8 @@ namespace CopyChan
         private float activeTime = 0;
         private float walkThreshold;
 
+        public CharController script;
+
         public bool attacking = false;
         public bool damaged = false;
         public bool active = false;
@@ -69,6 +71,7 @@ namespace CopyChan
             currentBaseState = anim.GetCurrentAnimatorStateInfo(0);
             UnityChan = GameObject.Find("unitychan");
             walkThreshold = Random.Range(55, 120);
+            script = UnityChan.GetComponent<CharController>();
         }
 
 
@@ -76,7 +79,10 @@ namespace CopyChan
         void FixedUpdate()
         {
             if (transform.position.y < -20)
+            {
+                script.enemyCount--;
                 Destroy(gameObject);
+            }
             if (transform.position.y < .25)
                 active = true;
             if (active && activeTime < 30)

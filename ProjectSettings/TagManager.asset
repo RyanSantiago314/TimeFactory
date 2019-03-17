@@ -16,6 +16,7 @@ TagManager:
   - Obstacle
   - Door4
   - Laser
+  - Bound
   layers:
   - Default
   - TransparentFX

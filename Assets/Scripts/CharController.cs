@@ -50,6 +50,7 @@ public class CharController : MonoBehaviour
 
     public Text subtitle;
     public int textTimer;
+    public int enemyCount = 0;
     public int killCount = 0;
 
     bool GotCard = false;
@@ -125,16 +126,20 @@ public class CharController : MonoBehaviour
         }
         else if (!Door4Open && Door4.transform.position.y > 5)
         {
-            Door4.transform.position -= new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
+            Door4.transform.position -= new Vector3(0, 2 * openSpeed * Time.deltaTime * TimeScale.global, 0);
         }
 
+        if (enemyCount != 0)
+            Door5Open = false;
+        else
+            Door5Open = true;
         if (Door5Open && Door5.transform.position.y < 21)
         {
             Door5.transform.position += new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
         }
         else if (!Door5Open && Door5.transform.position.y > 6)
         {
-            Door5.transform.position -= new Vector3(0, openSpeed * Time.deltaTime * TimeScale.global, 0);
+            Door5.transform.position -= new Vector3(0, 2* openSpeed * Time.deltaTime * TimeScale.global, 0);
         }
 
         if (killCount >= 5 && Pedestal.transform.position.y < 4.42)
@@ -249,7 +254,7 @@ public class CharController : MonoBehaviour
             textTimer = 0;
             watchSpot.spotAngle = 150;
             watchSpot.color = Color.red;
-
+            enemyCount += 5;
             for (int i = 0; i < 5; ++i)
             {
                 switch (i)
@@ -294,32 +299,37 @@ public class CharController : MonoBehaviour
             trip.Play();
             subtitle.text = "Uh oh...";
             textTimer = 0;
+            enemyCount += 6;
             for (int i = 0; i < 6; ++i)
             {
                 switch (i)
                 {
                     case 0:
-                        Instantiate(CopyChan, new Vector3(transform.position.x, 11, transform.position.z + 5), Quaternion.identity);
+                        Instantiate(CopyChan, new Vector3(transform.position.x, 11, transform.position.z + 3), Quaternion.identity);
                         break;
                     case 1:
-                        Instantiate(CopyChan, new Vector3(transform.position.x - 5, 13, transform.position.z + 3), Quaternion.identity);
+                        Instantiate(CopyChan, new Vector3(transform.position.x - 3, 13, transform.position.z + 3), Quaternion.identity);
                         break;
                     case 2:
-                        Instantiate(CopyChan, new Vector3(transform.position.x + 5, 13, transform.position.z + 3), Quaternion.identity);
+                        Instantiate(CopyChan, new Vector3(transform.position.x + 3, 13, transform.position.z + 3), Quaternion.identity);
                         break;
                     case 3:
-                        Instantiate(CopyChan, new Vector3(transform.position.x - 7, 14, transform.position.z), Quaternion.identity);
+                        Instantiate(CopyChan, new Vector3(transform.position.x - 5, 14, transform.position.z), Quaternion.identity);
                         break;
                     case 4:
-                        Instantiate(CopyChan, new Vector3(transform.position.x + 7, 14, transform.position.z), Quaternion.identity);
+                        Instantiate(CopyChan, new Vector3(transform.position.x + 5, 14, transform.position.z), Quaternion.identity);
                         break;
                     case 5:
-                        Instantiate(CopyChan, new Vector3(transform.position.x, 11, transform.position.z - 5), Quaternion.identity);
+                        Instantiate(CopyChan, new Vector3(transform.position.x, 11, transform.position.z - 3), Quaternion.identity);
                         break;
                     default:
                         break;
                 }
             }
+        }
+        else if (other.gameObject.CompareTag("Bound"))
+        {
+            transform.position = new Vector3(0, .05f, 405);
         }
     }
 
@@ -363,6 +373,7 @@ public class CharController : MonoBehaviour
             if (child != null)
                 child.SetActive(true);
         }
+        enemyCount = 0;
         script.health = 400;
         anim.speed = 1;
         SwitchedOn = false;

@@ -271,6 +271,7 @@ public class TimeController : MonoBehaviour
             script.laugh.Play();
             script.subtitle.text = "Now what do we have here...?";
             script.textTimer = 0;
+            script.enemyCount = 0;
             tutorial = false;
         }
         else if (other.gameObject.CompareTag("Obstacle"))
@@ -303,6 +304,7 @@ public class TimeController : MonoBehaviour
             other.gameObject.transform.position.y, other.gameObject.transform.position.z);
         sparkly.Play();
         script.killCount++;
+        script.enemyCount--;
         Destroy(other.gameObject, .5f);
     }
 
