@@ -21,6 +21,7 @@ namespace UnityChan
         public bool useCurves = true;               // Mecanimでカーブ調整を使うか設定する
                                                     // このスイッチが入っていないとカーブは使われない
         public float useCurvesHeight = 0.5f;        // カーブ補正の有効高さ（地面をすり抜けやすい時には大きくする）
+        public bool onSkater = false;
 
         // 以下キャラクターコントローラ用パラメタ
         // 前進速度
@@ -78,6 +79,21 @@ namespace UnityChan
             currentBaseState = anim.GetCurrentAnimatorStateInfo(0);
         }
 
+        void Update()
+        {
+            if (Input.GetButtonDown("Jump") && gameStart)
+            {  // スペースキーを入力したら
+
+                //アニメーションのステートがLocomotionの最中のみジャンプできる
+                    //ステート遷移中でなかったらジャンプできる
+                    if (!anim.IsInTransition(0))
+                    {
+                        rb.AddForce(Vector3.up * jumpPower, ForceMode.VelocityChange);
+                        anim.SetBool("Jump", true);     // Animatorにジャンプに切り替えるフラグを送る
+                    }
+            }
+        }
+
 
         // 以下、メイン処理.リジッドボディと絡めるので、FixedUpdate内で処理を行う.
         void FixedUpdate()
@@ -115,21 +131,6 @@ namespace UnityChan
                 else if (v < -0.1)
                 {
                     velocity *= backwardSpeed;  // 移動速度を掛ける
-                }
-
-                if (Input.GetButtonDown("Jump") && gameStart)
-                {  // スペースキーを入力したら
-
-                    //アニメーションのステートがLocomotionの最中のみジャンプできる
-                    if (currentBaseState.fullPathHash == locoState)
-                    {
-                        //ステート遷移中でなかったらジャンプできる
-                        if (!anim.IsInTransition(0))
-                        {
-                            rb.AddForce(Vector3.up * jumpPower, ForceMode.VelocityChange);
-                            anim.SetBool("Jump", true);     // Animatorにジャンプに切り替えるフラグを送る
-                        }
-                    }
                 }
 
 
@@ -275,9 +276,27 @@ namespace UnityChan
                 }
             }
         }
-        void OnTriggerEnter(Collider other)
+        void OnTriggerStay(Collider other)
         {
+            if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("Skater"))
+            {
+                forwardSpeed = 1.4f;
+                backwardSpeed = .6f;
+            }
+            if (other.gameObject.CompareTag("Skater"))
+            {
+                onSkater = true;
+            }
+        }
 
+        void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("Skater"))
+            {
+                forwardSpeed = 7f;
+                backwardSpeed = 3f;
+                onSkater = false;
+            }
         }
 
         // キャラクターのコライダーサイズのリセット関数

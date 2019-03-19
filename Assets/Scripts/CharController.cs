@@ -30,6 +30,7 @@ public class CharController : MonoBehaviour
     public GameObject KeyCard;
     public GameObject Watch;
     public GameObject Lasers;
+    public GameObject FinalDoor;
 
     public ParticleSystem sparkly;
     public ParticleSystem important;
@@ -38,6 +39,7 @@ public class CharController : MonoBehaviour
     public GameObject CopyChan;
 
     TimeController script;
+    public GameOverScreen end;
 
     public Light watchSpot;
 
@@ -47,11 +49,14 @@ public class CharController : MonoBehaviour
     private bool Door4Open = true;
     private bool Door5Open = true;
     private bool SwitchedOn = false;
+    private bool exit = false;
 
     public Text subtitle;
     public int textTimer;
     public int enemyCount = 0;
     public int killCount = 0;
+    public int hitObstacle = 0;
+    public int falls = 0;
 
     bool GotCard = false;
 
@@ -73,6 +78,15 @@ public class CharController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (exit)
+        {
+            FinalDoor.transform.position = new Vector3(FinalDoor.transform.position.x, 15, FinalDoor.transform.position.z);
+        }
+        else
+        {
+            FinalDoor.transform.position = new Vector3(FinalDoor.transform.position.x, 60, FinalDoor.transform.position.z);
+        }
+
         if(anim.GetFloat("Speed") == 1f && !jump.isPlaying && !GetComponent<UnityChan.UnityChanControlScriptWithRgidBody>().attacking)
             run.volume += 0.1f;
         else
@@ -196,6 +210,23 @@ public class CharController : MonoBehaviour
         {
             subtitle.text = "Is it okay to touch them or....?";
         }
+        else if (subtitle.text == "Is that the outside? Am I finally free?" && textTimer > 180)
+        {
+            subtitle.text = "'How interesting...'";
+        }
+        else if (subtitle.text == "'How interesting...'" && textTimer > 350)
+        {
+            subtitle.text = "Huh? What was that? Sounded like whispers coming from the walls...";
+            textTimer = 0;
+        }
+        else if (subtitle.text == "Huh? What was that? Sounded like whispers coming from the walls..." && textTimer > 180)
+        {
+            subtitle.text = "Whatever! I don't care. I'm getting out of here anyway!";
+        }
+        else if (subtitle.text == "Whatever! I don't care. I'm getting out of here anyway!" && textTimer > 300)
+        {
+            subtitle.text = "Outside world, here I come!";
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -299,6 +330,7 @@ public class CharController : MonoBehaviour
             trip.Play();
             subtitle.text = "Uh oh...";
             textTimer = 0;
+            hitObstacle += 1;
             enemyCount += 6;
             for (int i = 0; i < 6; ++i)
             {
@@ -327,9 +359,19 @@ public class CharController : MonoBehaviour
                 }
             }
         }
-        else if (other.gameObject.CompareTag("Bound"))
+        else if (other.gameObject.CompareTag("Final Door"))
         {
-            transform.position = new Vector3(0, .05f, 405);
+            exit = true;
+            subtitle.text = "Is that the outside? Am I finally free?";
+            textTimer = 0;
+        }
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("Skater"))
+        {
+            transform.parent = other.transform;
         }
     }
 
@@ -346,6 +388,15 @@ public class CharController : MonoBehaviour
         else if (other.gameObject.CompareTag("Terminal2"))
         {
             BigDoorOpen = false;
+        }
+
+        if (other.gameObject.CompareTag("Platform"))
+        {
+            transform.parent = null;
+        }
+        if (other.gameObject.CompareTag("Skater"))
+        {
+            transform.parent = null;
         }
     }
 
@@ -367,6 +418,12 @@ public class CharController : MonoBehaviour
         {
             Destroy(enemy);
         }
+        var pickups = GameObject.FindGameObjectsWithTag("HealthPack");
+        foreach (var health in pickups)
+        {
+            health.SetActive(false);
+        }
+
         for (int i = 0; i < Lasers.transform.childCount; i++)
         {
             var child = Lasers.transform.GetChild(i).gameObject;
@@ -375,11 +432,17 @@ public class CharController : MonoBehaviour
         }
         enemyCount = 0;
         script.health = 400;
+        script.energy = 400;
+        script.screenFlash.alpha = 0;
+        script.finish = false;
+        end.subNumber = Random.Range(1000, 9999);
         anim.speed = 1;
         SwitchedOn = false;
+        exit = false;
         turnOn.Stop();
         GotCard = false;
         script.timeSlow = false;
+        script.gotWatch = false;
         BigDoorOpen = true;
         Door4Open = true;
         KeyCard.SetActive(true);

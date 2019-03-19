@@ -17,6 +17,12 @@ TagManager:
   - Door4
   - Laser
   - Bound
+  - HealthPack
+  - Platform
+  - Axle
+  - Skater
+  - Final Door
+  - Exit
   layers:
   - Default
   - TransparentFX

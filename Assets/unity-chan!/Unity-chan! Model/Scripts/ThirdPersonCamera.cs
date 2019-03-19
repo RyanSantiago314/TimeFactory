@@ -16,7 +16,7 @@ namespace UnityChan
         public PostProcessingProfile gameOverProfile;
         public PostProcessingProfile pauseProfile;
         public TimeController controller;
-		public float smooth = 3f;		// カメラモーションのスムーズ化用変数
+		public float smooth = 5f;		// カメラモーションのスムーズ化用変数
 		Transform standardPos;			// the usual position for the camera, specified by a transform in the game
 		Transform frontPos;         // Front Camera locater
 
@@ -78,15 +78,15 @@ namespace UnityChan
 
 		void setCameraPositionNormalView ()
 		{
-			//if (control.timeSlow == false) {
+			if (!script.onSkater) {
 				// the camera to standard position and direction
 				transform.position = Vector3.Lerp (transform.position, standardPos.position, Time.fixedDeltaTime * smooth);	
 				transform.forward = Vector3.Lerp (transform.forward, standardPos.forward, Time.fixedDeltaTime * smooth);
-			/*} else {
+			} else {
 				// the camera to standard position and direction / Quick Change
 				transform.position = standardPos.position;	
 				transform.forward = standardPos.forward;
-			}*/
+			}
 		}
 
         public void openGame()

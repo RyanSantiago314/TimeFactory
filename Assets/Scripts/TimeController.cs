@@ -18,7 +18,8 @@ public class TimeController : MonoBehaviour
     private bool flash;
     public bool gotWatch = false;
     private bool recharge = false;
-    private bool tutorial = true;
+    public bool finish = false;
+    public bool tutorial = true;
     public Animator anim;
     public AudioSource jump;
     public AudioSource run;
@@ -39,7 +40,7 @@ public class TimeController : MonoBehaviour
     float healthBarWidth;
     float eBarWidth;
     public float health = 400;
-    float energy = 400;
+    public float energy = 400;
     float ghosthealth = 400;
 
     // Start is called before the first frame update
@@ -83,10 +84,10 @@ public class TimeController : MonoBehaviour
         else
             energyGraphic.color = Color.white;
 
-        GameOverScreen.SetActive(TimeScale.player == 0 && health <= 0);
+        GameOverScreen.SetActive(TimeScale.player == 0);
 
         //gameover when health hits zero
-        if (health <= 0)
+        if (health <= 0 || finish)
         {
             GameOver();
         }
@@ -196,7 +197,7 @@ public class TimeController : MonoBehaviour
                 rest.pitch = .6f;
                 idle.pitch = .6f;
                 damage.pitch = .6f;
-                anim.speed = .75f;
+                anim.speed = .8f;
 
             }
             else if (anim.GetCurrentAnimatorStateInfo(0).fullPathHash == Animator.StringToHash("Base Layer.Slide"))
@@ -280,6 +281,30 @@ public class TimeController : MonoBehaviour
             health -= 50;
             GetComponent<Rigidbody>().AddForce(Vector3.up * 20);
             GetComponent<Rigidbody>().AddForce(Vector3.forward * -75);
+            script.hitObstacle += 1;
+        }
+        else if (other.gameObject.CompareTag("Bound"))
+        {
+            script.trip.Play();
+            health -= 40;
+            script.falls += 1;
+            if (health > 0)
+            {
+                transform.position = new Vector3(0, .5f, 405);
+            }
+        }
+        else if (other.gameObject.CompareTag("HealthPack"))
+        {
+            if (health < 400)
+            {
+                script.laugh.Play();
+                script.sparkly.transform.position = new Vector3(other.transform.position.x, other.transform.position.y, other.transform.position.z);
+                script.sparkly.Play();
+                other.gameObject.SetActive(false);
+                health += 150;
+            }
+            if (health > 400)
+                health = 400;
         }
     }
 
@@ -294,6 +319,20 @@ public class TimeController : MonoBehaviour
                 GetComponent<Rigidbody>().AddForce(Vector3.up * 10);
                 GetComponent<Rigidbody>().AddForce(Vector3.forward * -10);
             }
+        }
+        if (other.gameObject.CompareTag("Exit"))
+        {
+            finish = true;
+            if (screenFlash.alpha < 1)
+            {
+                screenFlash.alpha += Time.deltaTime;
+            }
+            else
+            {
+                screenFlash.alpha = 1;
+                anim.SetFloat("Speed", 0);
+            }
+                
         }
     }
 
@@ -311,7 +350,6 @@ public class TimeController : MonoBehaviour
     void GameOver()
     {
         InGameUI.enabled = false;
-        gotWatch = false;
         transform.GetChild(7).gameObject.SetActive(false);
         if (TimeScale.player > 0)
         {
