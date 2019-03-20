@@ -202,7 +202,7 @@ public class TimeController : MonoBehaviour
             }
             else if (anim.GetCurrentAnimatorStateInfo(0).fullPathHash == Animator.StringToHash("Base Layer.Slide"))
             {
-                TimeScale.player = 2f;
+                TimeScale.player = 1.8f;
                 slide.pitch = 1;
                 anim.speed = 1.5f;
             }
@@ -350,6 +350,7 @@ public class TimeController : MonoBehaviour
     void GameOver()
     {
         InGameUI.enabled = false;
+        anim.SetFloat("Speed", 0);
         transform.GetChild(7).gameObject.SetActive(false);
         if (TimeScale.player > 0)
         {

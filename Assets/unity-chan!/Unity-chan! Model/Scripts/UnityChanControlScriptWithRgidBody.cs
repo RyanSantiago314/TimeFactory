@@ -283,6 +283,11 @@ namespace UnityChan
                 forwardSpeed = 1.4f;
                 backwardSpeed = .6f;
             }
+            else if (other.gameObject.CompareTag("Axle"))
+            {
+                forwardSpeed = 3.5f;
+                backwardSpeed = 1.5f;
+            }
             if (other.gameObject.CompareTag("Skater"))
             {
                 onSkater = true;
@@ -291,7 +296,7 @@ namespace UnityChan
 
         void OnTriggerExit(Collider other)
         {
-            if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("Skater"))
+            if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("Skater") || other.gameObject.CompareTag("Axle"))
             {
                 forwardSpeed = 7f;
                 backwardSpeed = 3f;

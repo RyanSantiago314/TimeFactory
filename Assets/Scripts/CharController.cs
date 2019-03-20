@@ -373,6 +373,10 @@ public class CharController : MonoBehaviour
         {
             transform.parent = other.transform;
         }
+        else if (other.gameObject.CompareTag("Axle"))
+        {
+            transform.parent = other.transform.parent;
+        }
     }
 
     void OnTriggerExit(Collider other) 

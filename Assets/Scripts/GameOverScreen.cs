@@ -24,11 +24,11 @@ public class GameOverScreen : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (script.health == 0)
+        if (script.health <= 0)
         {
             subtitle.color = Color.white;
             title.color = Color.white;
-            title.text = "Game Over";
+            title.text = "Project Unity Subject " + subNumber + " Test Failed";
 
             if (!script.gotWatch)
                 subtitle.text = "Rogue Unit, Replace immediately";
@@ -37,7 +37,7 @@ public class GameOverScreen : MonoBehaviour
             else if (charCon.enemyCount > 1)
                 subtitle.text = "Consider adjusting: Composure in crowds";
             else if (charCon.hitObstacle > 5)
-                subtitle.text = "Consider adjusting: Dodging Protocols";
+                subtitle.text = "Consider adjusting: Dodging Protocol";
             else if (charCon.falls > 5)
                 subtitle.text = "Consider adjusting: Motor Skills Functionality";
             else
@@ -48,17 +48,21 @@ public class GameOverScreen : MonoBehaviour
             subtitle.color = Color.black;
             title.color = Color.black;
 
-            title.text = "Project Unity " + subNumber + " Test Successful";
+            title.text = "Project Unity Subject " + subNumber + " Test Successful";
             if (charCon.killCount > 32)
                 subtitle.text = "Terminate Immediately, Genocidal Behavior Detected";
+            else if (charCon.killCount > 10)
+                subtitle.text = "Note: Check for murderous behavior in programming";
             else if (charCon.killCount >= 5)
                 subtitle.text = "Note: Kills only if deemed necessary";
             else if (charCon.killCount == 0)
                 subtitle.text = "Note: Pacifist";
             else if (!script.tutorial)
                 subtitle.text = "Note: Inherited Knowledge or Extreme Intelligence";
-            else if (charCon.hitObstacle > 5)
+            else if (charCon.hitObstacle > 8)
                 subtitle.text = "Note: Possible masochistic tendencies";
+            else if (charCon.falls > 5)
+                subtitle.text = "Note: Likes Falling";
             else if (charCon.falls > 3)
                 subtitle.text = "Note: Somewhat Clumsy";
             else
